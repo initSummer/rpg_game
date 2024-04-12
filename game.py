@@ -1,0 +1,67 @@
+#
+# Author        : summer
+# Description   : rpg game starter
+# 
+# Revision      :
+# Rev.    Date        Designer    Description
+# 1.0     2024-04-12  summer      Initial version
+# 
+
+import sys
+import pygame
+
+from src.sprite import Sprite
+from src.game_map import GameMap
+from src.char_walk import CharWalk
+
+
+class Game:
+    def __init__(self, title: str, width: int, height: int, fps: int = 60) -> None:
+        self.title_ = title
+        self.width_ = width
+        self.height_ = height
+        self.fps_ = fps
+
+        self.screen_surf_ = None
+        self.clock_ = None
+
+        self._init_pygame()
+        self._init_game()
+        self._update()
+
+    def _init_pygame(self):
+        pygame.init()
+        pygame.display.set_caption(self.title_)
+        self.screen_surf_ = pygame.display.set_mode([self.width_, self.height_])
+        self.clock_ = pygame.time.Clock()
+
+    def _init_game(self):
+        self.hero_ = pygame.image.load('./data/img/character/heros_0.png').convert_alpha()
+        self.map_bottom = pygame.image.load('./data/img/map/map_0_bottom.png').convert_alpha()
+        self.map_top = pygame.image.load('./data/img/map/map_0_top.png').convert_alpha()
+        self.game_map_ = GameMap(self.map_bottom, self.map_top, 0, 0)
+        self.game_map_.load_walk_file('./data/map/0.map')
+        self.role_ = CharWalk(self.hero_, 0, CharWalk.DIR_DOWN, 5, 10)
+        self.role_.goto(14, 10)
+
+    def _update(self):
+        while True:
+            self.clock_.tick(self.fps_)
+
+            self.role_.move()
+            self._event_handler()
+
+            self.game_map_.draw_bottom(self.screen_surf_)
+            self.role_.draw(self.screen_surf_, self.game_map_.x_, self.game_map_.y_)
+            self.game_map_.draw_top(self.screen_surf_)
+            # self.game_map_.draw_grid(self.screen_surf_)
+            pygame.display.update()
+
+    def _event_handler(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+
+
+if __name__ == '__main__':
+    Game("rpg", 640, 480)
