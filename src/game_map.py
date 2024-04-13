@@ -37,7 +37,7 @@ class GameMap(Array2D):
                 for y in range(self.height_):
                     v = int(file.readline())
                     self[x][y] = v
-        self.show_array2d()
+        # self.show_array2d()
 
     def draw_grid(self, screen_surf):
         for x in range(self.width_):

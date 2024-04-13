@@ -13,6 +13,8 @@ import pygame
 from src.sprite import Sprite
 from src.game_map import GameMap
 from src.char_walk import CharWalk
+import src.params as params
+from src.a_star import Point
 
 
 class Game:
@@ -36,11 +38,11 @@ class Game:
         self.clock_ = pygame.time.Clock()
 
     def _init_game(self):
-        self.hero_ = pygame.image.load('./data/img/character/heros_0.png').convert_alpha()
-        self.map_bottom = pygame.image.load('./data/img/map/map_0_bottom.png').convert_alpha()
-        self.map_top = pygame.image.load('./data/img/map/map_0_top.png').convert_alpha()
+        self.hero_ = pygame.image.load(f'{params.rpg_home_dir}/data/img/character/heros_0.png').convert_alpha()
+        self.map_bottom = pygame.image.load(f'{params.rpg_home_dir}/data/img/map/map_0_bottom.png').convert_alpha()
+        self.map_top = pygame.image.load(f'{params.rpg_home_dir}/data/img/map/map_0_top.png').convert_alpha()
         self.game_map_ = GameMap(self.map_bottom, self.map_top, 0, 0)
-        self.game_map_.load_walk_file('./data/map/0.map')
+        self.game_map_.load_walk_file(f'{params.rpg_home_dir}/data/map/0.map')
         self.role_ = CharWalk(self.hero_, 0, CharWalk.DIR_DOWN, 5, 10)
         self.role_.goto(14, 10)
 
@@ -49,18 +51,26 @@ class Game:
             self.clock_.tick(self.fps_)
 
             self.role_.move()
+            self.role_.logic()
             self._event_handler()
 
             self.game_map_.draw_bottom(self.screen_surf_)
             self.role_.draw(self.screen_surf_, self.game_map_.x_, self.game_map_.y_)
             self.game_map_.draw_top(self.screen_surf_)
-            # self.game_map_.draw_grid(self.screen_surf_)
+
+            self.game_map_.draw_grid(self.screen_surf_)
+
             pygame.display.update()
 
     def _event_handler(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_x, mouse_y = pygame.mouse.get_pos()
+                mx = (mouse_x - self.game_map_.x_) // params.cell_w
+                my = (mouse_y - self.game_map_.y_) // params.cell_h
+                self.role_.find_path(self.game_map_, Point(mx, my))
 
 
 if __name__ == '__main__':

@@ -9,6 +9,9 @@
 
 from src.sprite import Sprite
 import src.params as params
+from src.game_map import GameMap
+from src.a_star import AStar
+from src.a_star import Point
 
 
 class CharWalk:
@@ -33,6 +36,9 @@ class CharWalk:
         self.next_my_ = 0
 
         self.step_ = 2
+
+        self.path_ = []
+        self.path_index_ = 0
 
     def draw(self, screen_surf, map_x, map_y):
         cell_x = self.char_id_ % 12 + int(self.frame_)
@@ -86,3 +92,33 @@ class CharWalk:
         if self.x_ == dest_x and self.y_ == dest_y:
             self.frame_ = 1
             self.is_walking_ = False
+
+    def find_path(self, map2d: GameMap, end_point: Point):
+        start_point = Point(self.mx_, self.my_)
+        path = AStar(map2d, start_point, end_point).start()
+        if path is None:
+            if params.debug.a_star:
+                print(f"Cannot find path between ({self.mx_}, {self.my_}) and ({end_point.x()},{end_point.y()})")
+            return
+
+        if params.debug.a_star:
+            print(f"Find path between ({self.mx_}, {self.my_}) and ({end_point.x()},{end_point.y()})")
+            for node in path:
+                print(f"  ({node.x()}, {node.y()})")
+
+        self.path_ = path
+        self.path_index_ = 0
+
+    def logic(self):
+        self.move()
+
+        if self.is_walking_:
+            return
+
+        if self.path_index_ == len(self.path_):
+            self.path_ = []
+            self.path_index_ = 0
+
+        else:
+            self.goto(self.path_[self.path_index_].x(), self.path_[self.path_index_].y())
+            self.path_index_ += 1
