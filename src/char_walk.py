@@ -7,8 +7,8 @@
 # 1.0     2024-04-12  summer      Initial version
 #
 
-from src.sprite import Sprite
 import src.params as params
+from src.sprite import Sprite
 from src.game_map import GameMap
 from src.a_star import AStar
 from src.a_star import Point

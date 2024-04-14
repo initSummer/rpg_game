@@ -1,0 +1,27 @@
+digraph rpg_game{
+node[shape=circle, width=1]
+
+params
+
+array2d
+
+game_map
+params->game_map
+array2d->game_map
+
+a_star
+params->a_star
+game_map->a_star
+
+char_walk
+params->char_walk
+
+sprite
+params->sprite
+
+game
+char_walk->game
+sprite->game
+game_map->game
+
+}

@@ -42,7 +42,8 @@ class Game:
         self.map_bottom = pygame.image.load(f'{params.rpg_home_dir}/data/img/map/map_0_bottom.png').convert_alpha()
         self.map_top = pygame.image.load(f'{params.rpg_home_dir}/data/img/map/map_0_top.png').convert_alpha()
         self.game_map_ = GameMap(self.map_bottom, self.map_top, 0, 0)
-        self.game_map_.load_walk_file(f'{params.rpg_home_dir}/data/map/0.map')
+        self.game_map_.load_walk_file(f'{params.rpg_home_dir}/data/map/0_2d.map')
+        # self.game_map_.load_walk_file(f'{params.rpg_home_dir}/data/map/0.map')
         self.role_ = CharWalk(self.hero_, 0, CharWalk.DIR_DOWN, 5, 10)
         self.role_.goto(14, 10)
 
@@ -70,8 +71,12 @@ class Game:
                 mouse_x, mouse_y = pygame.mouse.get_pos()
                 mx = (mouse_x - self.game_map_.x_) // params.cell_w
                 my = (mouse_y - self.game_map_.y_) // params.cell_h
+                if params.debug.a_star:
+                    print(f"try to find path, mouse: ({mouse_x // params.cell_w}, {mouse_y // params.cell_h})")
+                    print(f"  game_map: ({self.game_map_.x_ // params.cell_w}, {self.game_map_.y_ // params.cell_h})")
+                    print(f"  start_point: ({self.role_.mx_}, {self.role_.my_})")
                 self.role_.find_path(self.game_map_, Point(mx, my))
 
 
 if __name__ == '__main__':
-    Game("rpg", 640, 480)
+    Game("rpg", params.screen_w_p, params.screen_h_p)

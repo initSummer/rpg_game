@@ -7,6 +7,10 @@
 # 1.0     2024-04-12  summer      Initial version
 #
 
+from src.game_map import GameMap
+import src.params as params
+
+
 class Point:
     pass
 
@@ -34,6 +38,8 @@ class Point:
 
 
 class AStar:
+    #todo: opt astar
+
     class Node:
         def __init__(self, point: Point, end_point: Point, g=0):
             self.point_ = point
@@ -41,24 +47,19 @@ class AStar:
             self.g_ = g
             self.h_ = (abs(end_point.x() - point.x()) + abs(end_point.y() - point.y())) * 10
 
-    def __init__(self, map2d, start_point: Point, end_point: Point, pass_tag: int = 0):
-        print(f"start_point type: {type(start_point)}")
-        print(f"end_point type: {type(end_point)}")
+    def __init__(self, map2d: GameMap, start_point: Point, end_point: Point, pass_tag: int = 0):
+        # print(f"start_point type: {type(start_point)}")
+        # print(f"end_point type: {type(end_point)}")
         self.open_list_ = []
         self.close_list_ = []
         self.map2d_ = map2d
-        if isinstance(start_point, Point) and isinstance(end_point, Point):
-            self.start_point_ = start_point
-            self.end_point_ = end_point
-        else:
-            self.start_point_ = start_point
-            self.end_point_ = end_point
-            # self.start_point_ = Point(*start_point)
-            # self.end_point_ = Point(*end_point)
+        self.start_point_ = start_point
+        self.end_point_ = end_point
 
         self.pass_tag_ = pass_tag
 
     def get_min_node(self) -> Node:
+        # todo: priority queue
         current_node = self.open_list_[0]
         for node in self.open_list_:
             if node.g_ + node.h_ < current_node.g_ + current_node.h_:
@@ -66,6 +67,7 @@ class AStar:
         return current_node
 
     def point_in_close_list(self, point) -> bool:
+        # todo: visited
         for node in self.close_list_:
             if node.point_ == point:
                 return True
@@ -99,14 +101,14 @@ class AStar:
             return
 
         # set cost
-        if offset_x == 0 and offset_y == 0:
+        if offset_x == 0 or offset_y == 0:
             step = 10
         else:
             step = 14
 
         current_node = self.point_in_close_list(current_point)
         if not current_node:
-            current_node = AStar.Node(current_point, self.end_point_, g=min_f.g_ + step)
+            current_node = AStar.Node(current_point, self.end_point_, g = min_f.g_ + step)
             current_node.father_ = min_f
             self.open_list_.append(current_node)
 
@@ -123,6 +125,8 @@ class AStar:
         self.open_list_.append(start_node)
         while True:
             min_f = self.get_min_node()
+            if params.debug.a_star:
+                print(f"searching ({min_f.point_.x()}, {min_f.point_.y()}), cost: {min_f.g_}, h: {min_f.h_}")
             self.close_list_.append(min_f)
             self.open_list_.remove(min_f)
             self.search_near(min_f, 0, -1)
