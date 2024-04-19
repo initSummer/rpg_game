@@ -19,7 +19,7 @@ hero_h = cell_h
 screen_w_p = screen_w * cell_w
 screen_h_p = screen_h * cell_h
 
-rpg_home_dir = "/home/summer/rpg_game"
+rpg_home_dir = "/home/yxy/rpg_game"
 
 developer_mode = True
 

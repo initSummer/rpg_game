@@ -21,7 +21,7 @@ class Array2D:
     def show_array2d(self):
         for y in range(self.height_):
             for x in range(self.width_):
-                print(self[x][y], end='')
+                print(self[x][y], end=',')
             print("")
 
     def __getitem__(self, item):
